@@ -30,7 +30,6 @@ class Lumatouch_ChallengeUITests: XCTestCase {
     func testExample() {
         //Sets up app and identify the button to be tapped
         let app = XCUIApplication()
-        //Verifies Begin and Cancel Buttons
         let beginButton = app.buttons["Begin"]
         let cancelButton = app.buttons["Cancel"]
         //Sets up an expectation that the label should change to "Ready". This will have the test wait to hit the begin button again until the timer has counted down to 0 and started over
@@ -39,10 +38,14 @@ class Lumatouch_ChallengeUITests: XCTestCase {
         expectation(for: exists, evaluatedWith: timerFinished, handler: nil)
         //Taps button to start the first countdown from 10 - 0
         beginButton.tap()
+        //Verifies that button changest to cancel button
+        XCTAssert(cancelButton.exists)
         //Verifies that button was changed to cancel after tap
         expectation(for: exists, evaluatedWith: cancelButton, handler: nil)
         //Waits for previous expectation. Timeout after 15 seconds. Should only need to wait for 10.
         waitForExpectations(timeout: 15, handler: nil)
+        //Verifies that button changes back to begin at the end of the 10 second timer
+        XCTAssert(beginButton.exists)
         //Sets up another expectation that the text will read "8".
         let twoSecondsPass = app.staticTexts["8"]
         expectation(for: exists, evaluatedWith: twoSecondsPass, handler: nil)
@@ -50,9 +53,17 @@ class Lumatouch_ChallengeUITests: XCTestCase {
         beginButton.tap()
         //Waits until the timer hits 8 seconds. Timeout of 5 seconds.
         waitForExpectations(timeout: 5, handler: nil)
+        //Checks that the cancel button existts
+        XCTAssert(cancelButton.exists)
         //Cancels the timer after waiting til there are 8 seconds left.
         cancelButton.tap()
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+        //Validates that Label and Button Return to Normal
+        expectation(for: exists, evaluatedWith: beginButton, handler: nil)
+        expectation(for: exists, evaluatedWith: timerFinished, handler: nil)
+        waitForExpectations(timeout: 1, handler: nil)
+        //Checks that the button says begin and the label says ready
+        XCTAssert(beginButton.exists)
+        XCTAssert(app.staticTexts["Ready"].exists)
     }
 
 }
